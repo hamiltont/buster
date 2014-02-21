@@ -87,6 +87,28 @@ Inspired by THE GhostBusters.
 
    Ghost Buster Movie
 
+Run via Docker
+--------------
+
+`Docker <https://www.docker.io/>`__ is an easy way to run Buster in an isolated environment. 
+
+First, we download the site. Then we generate and deploy. 
+
+Substitute a `Github access token <https://help.github.com/articles/creating-an-access-token-for-command-line-use>`__
+for ${TOKEN}, your **https** stype repository URL for ${REPO}, and your website for 
+${SITE}
+
+    $ TOKEN=q2e42be10665b0307069a56bc389f342a797d34e
+    $ REPO=github.com/you/your_repo.git
+    $ SITE=my_ghost_blog.com
+    $ SETUP=$(sudo docker run -d axitkhurana/buster setup-clone --gh-repo=https://${TOKEN}@${REPO})
+    $ GEN=$(sudo docker run -d $SETUP generate --domain=${SITE})
+    $ sudo docker run $GEN deploy
+
+If you only ever use Buster, then you only have to run setup-clone once. After 
+that you can store and reuse the SETUP container. Use docker logs $SETUP to see 
+the ouput of the containers
+
 Contributing
 ------------
 
