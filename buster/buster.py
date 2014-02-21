@@ -2,6 +2,7 @@
 
 Usage:
   buster.py setup [--gh-repo=<repo-url>] [--dir=<path>]
+  buster.py setup-clone [--gh-repo=<repo-url>] [--dir=<path>]
   buster.py generate [--domain=<local-address>] [--dir=<path>]
   buster.py preview [--dir=<path>]
   buster.py deploy [--dir=<path>]
@@ -101,6 +102,34 @@ def main():
 
         print "All set! You can generate and deploy now."
 
+    elif arguments['setup-clone']:
+        if arguments['--gh-repo']:
+            repo_url = arguments['--gh-repo']
+        else:
+            repo_url = raw_input("Enter the Github repository URL:\n").strip()
+
+        # Create a fresh new static files directory
+        if os.path.isdir(static_path):
+            confirm = raw_input("This will destroy everything inside static/."
+                                " Are you sure you want to continue? (y/N)").strip()
+            if confirm != 'y' and confirm != 'Y':
+                sys.exit(0)
+            shutil.rmtree(static_path)
+
+        # User/Organization page -> master branch
+        # Project page -> gh-pages branch
+        branch = 'gh-pages'
+        regex = re.compile(".*[\w-]+\.github\.(?:io|com).*")
+        if regex.match(repo_url):
+            branch = 'master'
+
+        # Prepare git repository
+        repo = Repo.clone_from(repo_url, static_path)
+        git = repo.git
+
+        # TODO please check if gh-pages vs master works properly here        
+
+        print "All set! You can generate and deploy now."
     elif arguments['deploy']:
         repo = Repo(static_path)
         repo.git.add('.')
